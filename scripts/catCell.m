@@ -6,9 +6,9 @@ p.addRequired('a',@iscell);
 p.addRequired('b',@iscell);
 p.addParameter('mode',defaultOption,@(x)(any(validatestring(x,expectedOptions))));
 p.parse(a,b,varargin{:});
-if (isempty(a))
+if ((isempty(a))||((length(a)==1)&&isempty(a{:})))
     c = b;
-elseif (isempty(b))
+elseif ((isempty(b))||((length(b)==1)&&isempty(b{:})))
     c = a;
 else
     if(strcmp(p.Results.mode,'v'))
