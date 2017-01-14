@@ -1,4 +1,4 @@
-function data = getMVCScaledData(runNumber,varargin)
+function [data,fs] = getMVCScaledData(runNumber,varargin)
 runTypes = {'Left_biceps_brachii','Left_extensor_digitorum','Left_flexor_carpi_ulnaris','Left_flexor_digitorum_superficial','Left_triceps_brachii','Right_anterior_deltoid','Right_biceps_brachii','Right_extensor_digitorum','Right_flexor_carpi_ulnaris','Right_flexor_digitorum_superficialis','Right_middle_deltoid','Right_pectoralis_major_clavicular_head','Right_triceps_brachii','Plot_and_Store'};
 id = 'MATLAB:table:ModifiedVarnames';
 warning('off',id);
@@ -29,6 +29,7 @@ for i = 1:length(runTypes)-1
    tempMVC = 0;
    for j = 1:length(sorted{i})
         plotAndStore = import_csv(sorted{i}{j});
+        fs = 1/(plotAndStore{2,1}-plotAndStore{1,1});
         tempMVC = tempMVC+max(maFilter(plotAndStore{:,2},1000));
    end
    MVC(i) = tempMVC/length(sorted{i});

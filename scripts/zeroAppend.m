@@ -1,7 +1,5 @@
-function data = zeroAppend(data,powTwo)
+function data = zeroAppend(data,nZeroes)
 assert(isvector(data),'Needs to be a vector')
-N = length(data);
-nZeroes = 2^powTwo - N;
 if (isrow(data))
     data = [data, zeros(size(data,1),nZeroes)];
 else
