@@ -5,6 +5,9 @@ warning('off',id);
 fileNames = getFileNames();
 expr = ['Run_number_',num2str(runNumber),'_'];
 reducedNames = {};
+
+nRMS = 50;
+
 for i = 1:length(fileNames)
     temp = regexp(fileNames{i},expr);
     if (~isempty(temp))
@@ -19,7 +22,7 @@ for i = 1:length(runTypes)
             tempCell = catCell(tempCell,reducedNames(j));
         end
     end
-    sorted{i} = tempCell;
+    sorted{i} = unique(tempCell);
 end
 
 %Compute MVC for muscles
@@ -30,7 +33,7 @@ for i = 1:length(runTypes)-1
    for j = 1:length(sorted{i})
         plotAndStore = import_csv(sorted{i}{j});
         fs = 1/(plotAndStore{2,1}-plotAndStore{1,1});
-        tempMVC = tempMVC+max(maFilter(plotAndStore{:,2},1000));
+        tempMVC = tempMVC+max(maFilter(rmsFilter(plotAndStore{:,2},nRMS),1000));
    end
    MVC(i) = tempMVC/length(sorted{i});
 end
@@ -39,17 +42,21 @@ end
 data = cell(1,length(sorted{end}));
 for i = 1:length(sorted{end})
     plotAndStore = import_csv(sorted{end}{i});
+    RMSFiltered = zeros(size(plotAndStore,1)/nRMS,size(plotAndStore,2));
+    for j = 1:size(plotAndStore,2)
+        RMSFiltered(:,j) = rmsFilter(plotAndStore{:,j},nRMS);
+    end
     for j = 1:length(sorted)-1
        matchesMuscle = ~cellfun(@isempty,regexp(plotAndStore.Properties.VariableNames,changeFormatFilenameToTable(runTypes{j})));
        matchesEMG    = ~cellfun(@isempty,regexp(plotAndStore.Properties.VariableNames,'EMG'));
        matchesBoth   = matchesEMG&matchesMuscle;
        try
-       plotAndStore{:,matchesBoth} = 100 .* plotAndStore{:,matchesBoth} ./ MVC(j);
+       RMSFiltered(:,matchesBoth) = 100 .* RMSFiltered(:,matchesBoth) ./ MVC(j);
        catch
           disp('ufuckedup'); 
        end
      end
-    data{i} = plotAndStore;
+    data{i} =  array2table(RMSFiltered,'VariableNames',plotAndStore.Properties.VariableNames);
 end
 warning('on',id);
 end

@@ -6,11 +6,11 @@ defaultMethod = {'euclidean'};
 modeOptions = {'r','c'};
 normMethods = {'euclidean','none'};
 
-p.addRequired('data',@ismatrix);
+p.addRequired('data',@istable);
 p.addOptional('mode',defaultMode,@(x)(any(validatestring(x,modeOptions))));
 p.addParameter('method',defaultMethod,@(x)(any(validatestring(x,normMethods))));
 p.parse(data,mode,varargin{:});
-data = p.Results.data;
+data = table2array(p.Results.data);
 if (strcmp(p.Results.mode,'c'))
     data = data';
 end
@@ -31,4 +31,6 @@ normalisedData = data ./ normValues;
 if (strcmp(p.Results.mode,'c'))
     normalisedData = normalisedData';
 end
+
+normalisedData = array2table(normalisedData,'RowNames',p.Results.data.Properties.RowNames,'VariableNames',p.Results.data.Properties.VariableNames);
 end

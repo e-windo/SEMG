@@ -1,5 +1,40 @@
 %hello dummy
+sensor = getTableData(data{1},'EMG');
 
+rightTricepBicep= [6,4];
+rightDigitorumFlexorSuperficialis = [8,12];
+figureDigitorumFlexorUlnaris = [8,10];
+leftTricepBicep= [7,5];
+leftDigitorumFlexorSuperficialis = [9,13];
+leftDigitorumFlexorUlnaris = [9,11];
+nRMS = 50;
+figure
+subplot(211)
+a = [];
+a.name = getName(rightTricepBicep);
+a.i = eval([a.name,'(1)']);
+a.j = eval([a.name,'(2)']);
+hold on;
+plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.i},nRMS),'DisplayName',sensor.Properties.VariableNames{a.i})
+plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.j},nRMS),'r','DisplayName',sensor.Properties.VariableNames{a.j})
+title(a.name);
+
+subplot(212)
+a.name = getName(leftTricepBicep);
+a.i = eval([a.name,'(1)']);
+a.j = eval([a.name,'(2)']);
+hold on;
+plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.i},nRMS),'DisplayName',sensor.Properties.VariableNames{a.i})
+plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.j},nRMS),'r','DisplayName',sensor.Properties.VariableNames{a.j})
+title(a.name);
+
+for k = 1:2
+    subplot(2,1,k)
+    %axis([50,53,0,130]);
+    legend('-DynamicLegend');
+end
+
+%{
 name = 'Run_number_22_Plot_and_Store_3_Rep_1.20.hpf.csv';
 
 if (~exist('plot_clean','var')) plot_clean = false; end
@@ -23,3 +58,4 @@ for i = 1:width(sensor)
 end
 
 
+%}
