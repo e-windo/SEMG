@@ -7,14 +7,7 @@ function features = getFeaturesFromData(M)
     for i = 1:size(M,2)
         varName = M.Properties.VariableNames{i};
         try 
-            L = length(M{:,i});
-            Y = fft(M{:,i});
-            P2 = abs(Y)/L;
-            P1 = P2(1:L/2+1);
-            C = cumsum(P1);
-            [~,loc] = max(C>C(end)/2);
-            medFreq = P1(loc);
-            features.(varName).imdf = medFreq;
+            features.(varName).imdf = medFreq(M{:,i});
         catch
             features.(varName).imdf = NaN;
         end
