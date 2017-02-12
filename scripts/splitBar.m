@@ -1,4 +1,5 @@
 [num,txt,raw] = xlsread('timings_22.xlsx','timings');
+fh = @(x) all(isnan(x(:)));
 firstcol = raw(:,1);
 firstcol(cellfun(fh,firstcol)) = {'NO'};
 firstrow = raw(1,:);
@@ -27,12 +28,14 @@ uniqueFirst = unique(cellfun(@(x)(x(1)),firstLetter));
 dataSectioned = cell(1,nPlotAndStore);
 sectionedNames = cell(1,nPlotAndStore);
 for k = 1:nPlotAndStore
-   dataSectioned{k} = cell(1,length(uniqueFirst)); 
-   sectionedNames{k} = cell(1,length(uniqueFirst)); 
-   for i = 1:length(uniqueFirst)
+   dataSectioned{k} = cell(1,length(firstLetter)); 
+   sectionedNames{k} = cell(1,length(firstLetter)); 
+   %{
+    for i = 1:length(uniqueFirst)
       dataSectioned{k}{i} = []; 
       sectionedNames{k}{i} = {[]};
    end
+   %}
 end
 for i = 1:length(uniqueFirst)
     for j = 1:length(firstLetter)
@@ -41,16 +44,17 @@ for i = 1:length(uniqueFirst)
                 selector = @(x)((x>bounds{j,2*k-1}')&(x<bounds{j,2*k}'));
                 indices = selector(data{k}{:,1});
                 N = sum(indices);
-                dataSectioned{k}{i} = [dataSectioned{k}{i}',data{k}{indices,:}']';
                 ords = num2words(1:N); 
-                sectionedNames{k}{i} = catCell(sectionedNames{k}{i},strcat({nameFormat(rowNames{j})},{'_'},ords),'mode','h');
+                sectionedNames{k}{j} = strcat({nameFormat(rowNames{j})},{'_'},ords);
+                dataSectioned{k}{j} = array2table(data{k}{indices,:},'RowNames',sectionedNames{k}{j},'VariableNames',data{k}.Properties.VariableNames);
             end
         end
     end
 end
-
+%{
 for k = 1:nPlotAndStore
    for i = 1:length(uniqueFirst)
       dataSectioned{k}{i} = array2table(dataSectioned{k}{i},'RowNames',sectionedNames{k}{i},'VariableNames',data{k}.Properties.VariableNames); 
    end
 end
+%}
