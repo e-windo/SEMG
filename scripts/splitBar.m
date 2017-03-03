@@ -51,10 +51,19 @@ for i = 1:length(uniqueFirst)
         end
     end
 end
-%{
+
 for k = 1:nPlotAndStore
-   for i = 1:length(uniqueFirst)
-      dataSectioned{k}{i} = array2table(dataSectioned{k}{i},'RowNames',sectionedNames{k}{i},'VariableNames',data{k}.Properties.VariableNames); 
-   end
+    for i = 1:length(dataSectioned{k})
+        fsamp = 2000;
+        duration = 1;
+        overlap = 0.9;
+        entry = dataSectioned{k}{i};
+        NEpochs = getNEpochs(dataSectioned{k}{i}{:,:},fsamp,duration,overlap,false);
+        dataSectioned{k}{i} = cell(1,NEpochs);
+        for j = 1:NEpochs
+            temp = getEpoch(entry,fsamp,duration,overlap,false,j);
+            %temp.Properties.RowNames = strcat(temp.Properties.RowNames,['_epoch_',num2str(j)]);
+            dataSectioned{k}{i}{j} = temp;
+        end
+    end
 end
-%}

@@ -6,7 +6,7 @@ fileNames = getFileNames();
 expr = ['Run_number_',num2str(runNumber),'_'];
 reducedNames = {};
 
-nRMS = 50;
+nRMS = 1;
 
 for i = 1:length(fileNames)
     temp = regexp(fileNames{i},expr);
@@ -53,7 +53,7 @@ for i = 1:length(sorted{end})
        try
        RMSFiltered(:,matchesBoth) = 100 .* RMSFiltered(:,matchesBoth) ./ MVC(j);
        catch
-          disp('ufuckedup'); 
+          disp('umessedup'); 
        end
      end
     data{i} =  array2table(RMSFiltered,'VariableNames',plotAndStore.Properties.VariableNames);
@@ -71,7 +71,7 @@ function output = changeFormatFilenameToTable(filename)
     end
     output = strrep(output,'_','');
     catch
-       disp('ufuckedup'); 
+       disp('umessedup'); 
        output = '';
     end
 end

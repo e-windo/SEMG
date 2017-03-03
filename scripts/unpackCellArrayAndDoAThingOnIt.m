@@ -13,10 +13,12 @@ else
     upName = '';
     names = names(2:end);
     for i = 1:length(Arr)
+        try
         [newData,newName] = unpackCellArrayAndDoAThingOnIt(Arr{i},thing,names);
-        if isempty(newName)
-            newName = num2str(i);
+        catch
+            'can''t handle this gracefully';
         end
+        newName = [newName,'_',num2str(i)];
         conglom.([firstName,'_',newName]) = newData;
     end
 end

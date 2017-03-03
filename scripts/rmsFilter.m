@@ -1,3 +1,7 @@
 function out = rmsFilter(input, N)
-temp =  reshape(input,N,[]);
-out = rms(temp);
+if N==1
+    out = input;
+else
+    temp =  reshape(input,N,[]);
+    out = rms(temp);
+end
