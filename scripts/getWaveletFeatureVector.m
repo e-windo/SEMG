@@ -2,14 +2,14 @@ function results = getWaveletFeatureVector(data,fs)
 assert(iscell(data),'Data must be a cell array');
 features = [];
 
-nRMS = 50;
+nRMS = 1;
 fs = fs/nRMS;
 for i = 1:length(data)
     assert(ismatrix(data{i}),'Cell contents must be arrays');
     emgData = getTableData(data{i},'EMG');
     L = 2000;
     duration = 2;
-    overlap = 0.5;
+    overlap = 0;
     N = getNEpochs(emgData,fs,duration,overlap,true);
 
     

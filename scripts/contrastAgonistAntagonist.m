@@ -12,7 +12,7 @@ figure
 tidy = @(x)(strrep(x,'_','\_'));
 subplot(211)
 a = [];
-a.name = getName(rightTricepBicep);
+a.name = getName(rightDigitorumFlexorSuperficialis);
 a.i = eval([a.name,'(1)']);
 a.j = eval([a.name,'(2)']);
 hold on;
@@ -21,7 +21,7 @@ plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.j},nRMS),'r','DisplayName
 title(a.name);
 
 subplot(212)
-a.name = getName(leftTricepBicep);
+a.name = getName(leftDigitorumFlexorSuperficialis);
 a.i = eval([a.name,'(1)']);
 a.j = eval([a.name,'(2)']);
 hold on;

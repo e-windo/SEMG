@@ -1,4 +1,5 @@
-[num,txt,raw] = xlsread('timings_22.xlsx','timings');
+
+[num,txt,raw] = xlsread('timings_12.xlsx','timings');
 fh = @(x) all(isnan(x(:)));
 firstcol = raw(:,1);
 firstcol(cellfun(fh,firstcol)) = {'NO'};
