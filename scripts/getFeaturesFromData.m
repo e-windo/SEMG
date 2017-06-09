@@ -1,4 +1,4 @@
-%This function is applied to a SensiumDataBlock in order to extract a set
+%This function is applied to a DataBlock in order to extract a set
 %of features. These features are stored in a struct, and are returned. This
 %is then processed, typically using the applyToData function.
 
@@ -7,9 +7,19 @@ function features = getFeaturesFromData(M)
     for i = 1:size(M,2)
         varName = M.Properties.VariableNames{i};
         try 
-            features.(varName).imdf = medFreq(M{:,i});
+            features.(varName).mf = meanfreq(M{:,i},2000);
+        catch
+            features.(varName).mf = NaN;
+        end
+        try 
+            features.(varName).imdf = medfreq(M{:,i},2000);
         catch
             features.(varName).imdf = NaN;
+        end
+        try 
+            features.(varName).meanEMG = mean(abs(M{:,i}));
+        catch
+            features.(varName).meanEMG = NaN;
         end
         try
             [C,L] = wavedec(M{:,i},nWaveletSubbands,'sym4');

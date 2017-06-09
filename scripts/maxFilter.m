@@ -17,4 +17,5 @@ for i = 1:length(y)
     end
 end
 y = ternary(col,y',y);
+y = y + eps;
 end

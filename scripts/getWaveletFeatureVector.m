@@ -5,13 +5,14 @@ features = [];
 nRMS = 1;
 fs = fs/nRMS;
 for i = 1:length(data)
+    disp(['Currently on plotandstore ',num2str(i), ' out of ', num2str(length(data))])
     assert(ismatrix(data{i}),'Cell contents must be arrays');
     emgData = getTableData(data{i},'EMG');
     L = 2000;
     duration = 2;
     overlap = 0;
     N = getNEpochs(emgData,fs,duration,overlap,true);
-
+    disp([num2str(N),' epochs present.'])
     
     for j = 1:N
        tempData = getEpoch(emgData,fs,duration,overlap,true,j);

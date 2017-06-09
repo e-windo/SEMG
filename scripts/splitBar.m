@@ -1,5 +1,4 @@
-
-[num,txt,raw] = xlsread('timings_12.xlsx','timings');
+[num,txt,raw] = xlsread('FATIGUE_AMENDED.xlsx',['timings_',num2str(plotID)]);
 fh = @(x) all(isnan(x(:)));
 firstcol = raw(:,1);
 firstcol(cellfun(fh,firstcol)) = {'NO'};
@@ -53,6 +52,8 @@ for i = 1:length(uniqueFirst)
     end
 end
 
+clearvars('data');
+
 for k = 1:nPlotAndStore
     for i = 1:length(dataSectioned{k})
         fsamp = 2000;
@@ -68,3 +69,5 @@ for k = 1:nPlotAndStore
         end
     end
 end
+
+clearvars('entry','indices','ords');

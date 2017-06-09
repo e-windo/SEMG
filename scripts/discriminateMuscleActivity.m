@@ -1,5 +1,5 @@
 function labels = discriminateMuscleActivity(scores)
-thresh = 0.1; %idiot discriminator
+thresh = 0.3; %idiot discriminator
 labels = scores > thresh;
 %{
 [~,peaks] = findpeaks(scores,'MinPeakDistance',300);

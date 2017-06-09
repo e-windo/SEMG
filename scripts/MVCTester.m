@@ -1,7 +1,7 @@
 function out = MVCTester(data)
-nIterRMS = 1;
+nIterRMS = 5000;
 nIterMean = 1;
-nIterMedian = 120;
+nIterMedian = 1;
 MVCRMS = zeros(1,nIterRMS);
 MVCnMean = zeros(1,nIterMean);
 MVCnMedian = zeros(1,nIterMedian);
@@ -22,7 +22,7 @@ for i = 1:nIterRMS
     %Max or best of?
 end
 
-out = MVCnMedian;
+out = MVCRMS;
 figure;
 plot(out);
 end

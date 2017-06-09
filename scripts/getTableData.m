@@ -1,18 +1,20 @@
-function reducedData = getTableData(sourceTable,expr)
+function reducedData = getTableData(sourceTable,expr,varargin)
+defaultModeInclude = false;
+defaultModeRowVar = false;
 p = inputParser;
 p.addRequired('table',@istable);
 p.addRequired('expr',@ischar);
-p.parse(sourceTable,expr);
+p.addParameter('modeInclude',defaultModeInclude,@islogical);
+p.addParameter('modeRowVar',defaultModeRowVar,@islogical);
+p.parse(sourceTable,expr,varargin{:});
 
-reducedData = [];
-reducedVarNames = {};
-fullVarNames = p.Results.table.Properties.VariableNames;
-for i = 1:length(fullVarNames)
-    temp = regexp(p.Results.table.Properties.VariableNames{i},expr);
-    if (~isempty(temp))
-        reducedData = [reducedData,p.Results.table{:,i}];
-        reducedVarNames = catCell(reducedVarNames,fullVarNames(i));
-    end
+if (~p.Results.modeRowVar)
+    temp = regexp(p.Results.table.Properties.VariableNames,expr);
+    temp = xor(p.Results.modeInclude,~cellfun(@isempty,temp));
+    reducedData = p.Results.table(:,temp);
+else
+    temp = regexp(p.Results.table.Properties.RowNames,expr);
+    temp = xor(p.Results.modeInclude,~cellfun(@isempty,temp));
+    reducedData = p.Results.table(temp,:);
+    
 end
-reducedData = array2table(reducedData,'VariableNames',reducedVarNames);
-

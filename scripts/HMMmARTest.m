@@ -1,9 +1,18 @@
 addpath(genpath('.'))
+DS = [];
+ids = 1:3;
+ulim = 800000;
+hlim = 900000;
+nRMS = 100;
+for id = ids
+    DS = [DS,rmsFilter(sensor{ulim:hlim,id},100)'*10000000];
+end
+DT = (1:size(DS,1))./(2000/nRMS);
 K = 2; % number of states
-nDim = 1; % number of channels
+nDim = length(ids); % number of channels
 N = 1; % number of trials
 Fs = 200;
-X = DS(:,2).^2;
+X = DS;
 T = length(X) * ones(N,1); % number of data points
 
 %{
@@ -37,21 +46,6 @@ hmmtrue.Pi = hmmtrue.Pi./sum(hmmtrue.Pi);
 
 [X,T,Gammatrue] = simhmmmar(T,hmmtrue,[]);
 %}
-
-options = struct();
-options.K = K; 
-options.covtype = 'full'; % model just variance of the noise
-order = 30;
-options.order = order; % MAR order 
-options.zeromean = 0; % model the mean
-options.tol = 1e-8;
-options.cyc = 25;
-options.inittype = 'hmmmar';
-options.initcyc = 5;
-options.initrep = 3;
-options.verbose = 1;
-%options.onpower = 1; %Run on POWER. doesn't work though
-%options.pca = 0.99;
 %{
 options = struct();
 options.K = K; 
@@ -69,14 +63,42 @@ options.initrep = 5;
 options.verbose = 1;
 %}
 
+options = struct();
+options.K = K; 
+options.covtype = 'full'; % model just variance of the noise
+order = 2;
+options.order = order; % MAR order 
+options.zeromean = 1; % model the mean
+options.tol = 1e-8;
+options.cyc = 25;
+options.inittype = 'hmmmar';
+options.initcyc = 5;
+options.initrep = 3;
+options.verbose = 1;
+%options.onpower = 1; %Run on POWER. doesn't work though
+%options.pca = 0.99;
+
+disp('attempt to train model?');
+try
 [hmm, Gamma, Xi, vpath, ~, ~, fehist] = hmmmar(X,T,options);
+
+catch
+        disp('error');
+end
+disp('model either trained or broken, continue...');
 figure;
 ax = cell(1,nDim);
 for i = 1:nDim
     ax{i} = subplot(nDim,1,i);
     hold on;
     for j = 1:K
-        plot(DS(order+1:end,i).*(vpath==j),'DisplayName',['State ', num2str(j)]);
+        temp = DS(order+1:end,i);
+        if (j~=1)
+            temp = temp.*(vpath==j);
+            indices = temp == 0;
+            temp(indices) = NaN;
+        end
+        plot(DT(order+1:end),temp,'DisplayName',['State ', num2str(j)]);
     end
     legend('-DynamicLegend');
 end
@@ -91,6 +113,7 @@ linkaxes(kitty,'x');
 plot(Gamma(:,1),'b');
 plot(Gamma(:,2),'r');
 %}
+%{
 optionsSpectra = struct();
 optionsSpectra.Fs = 2000;
 optionsSpectra.Nf = 500;
@@ -99,3 +122,4 @@ optionsSpectra.order = order;
 
 fitPar = hmmspectramar(X,T,hmm,Gamma,optionsSpectra);
 fitNonPar = hmmspectramt(X,T,Gamma,optionsSpectra);
+%}
