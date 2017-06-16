@@ -1,14 +1,16 @@
 %A nice frequency spectrum
 %https://uk.mathworks.com/matlabcentral/answers/36430-plotting-the-frequency-spectrum
-function aNiceFSpectrum(t,x,Fs,varargin)
+function aNiceFSpectrum(x,Fs,varargin)
    p = inputParser;
-   paramName = 'handle';
    defaultHandle = gca;
+   defaultMode = true;
+   t = (1:length(x))./Fs;
    validationFcn = @(x)(ishandle(x));
-   addParameter(p,paramName,defaultHandle,validationFcn);
-   p.parse();
+   p.addParameter('handle',defaultHandle,validationFcn);
+   p.addParameter('mode',defaultMode,@islogical);
+   p.parse(varargin{:});
    
-   N = size(t,1);
+   N = length(t);
    
    %% Fourier Transform:
    X = fftshift(fft(x));
@@ -16,6 +18,13 @@ function aNiceFSpectrum(t,x,Fs,varargin)
    dF = Fs/N;                      % hertz
    f = -Fs/2:dF:Fs/2-dF;           % hertz
    %% Plot the spectrum:  
-   plot(p.Results.handle,f,abs(X)/N);
-   xlabel('Frequency (in hertz)');
+   if p.Results.mode
+       plot(p.Results.handle,f,abs(X)/N);
+   
+   else
+       plot(p.Results.handle,f,20*log10(abs(X)/N));
+   
+   end
+   xlabel('Frequency / Hz');
+   ylabel('Amplitude / V');
    title('Magnitude Response');

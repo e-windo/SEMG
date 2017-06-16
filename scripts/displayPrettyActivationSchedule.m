@@ -1,8 +1,8 @@
-function displayPrettyActivationSchedule(t,data,ids)
+function displayPrettyActivationSchedule(t,data,ids,ulim,hlim)
 set(0,'DefaultTextInterpreter','none');
 nDisplay = length(ids);
-ulim = 0.45*10^6;
-hlim = 3*10^6; %0.5*10^6;
+%ulim = 0.45*10^6;
+%hlim = 3*10^6; %0.5*10^6;
 ax = cell(1,nDisplay);
 for i = 1:nDisplay
    ax{i} = subplot(nDisplay,1,i);

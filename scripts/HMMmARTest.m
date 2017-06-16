@@ -1,12 +1,16 @@
 addpath(genpath('.'))
 DS = [];
-ids = 1:3;
+ids = 1:5;
 ulim = 800000;
-hlim = 900000;
+hlim = 810000;
 nRMS = 100;
+
 for id = ids
-    DS = [DS,rmsFilter(sensor{ulim:hlim,id},100)'*10000000];
+    temp = sensor{ulim:hlim,id}'*10000000;
+    opt = getOptimalOffset(temp,sensor{ulim:hlim,ids(1)}'*10000000);
+    DS = [DS;circshift(temp,opt)];
 end
+DS = DS';
 DT = (1:size(DS,1))./(2000/nRMS);
 K = 2; % number of states
 nDim = length(ids); % number of channels
@@ -100,7 +104,7 @@ for i = 1:nDim
         end
         plot(DT(order+1:end),temp,'DisplayName',['State ', num2str(j)]);
     end
-    legend('-DynamicLegend');
+    %legend('-DynamicLegend');
 end
 
 kitty = [];

@@ -1,11 +1,9 @@
-function out = demoWignerVille(sensor,t)
-ulim = 0.470*10^6;
-hlim = 0.480*10^6;
-qDat = sensor{ulim:hlim,1};
-tDat = t(ulim:hlim);
-
-[tfr, t, f] = wv(resample(qDat'./max(qDat'),1000,2000));
-contour(f,t,abs(tfr'));
-
+function out = demoWignerVille(input,fs)
+[tfr, t, f] = wv(resample(input'./max(input'),1000,2000));
+t = (1:length(t)).*(2/fs);
+f = (0:length(f)-1).*(800/fs);
+contour(t,f,abs(tfr'));
+xlabel('Time /s');
+ylabel('Frequency / Hz');
 out = 0;
 end

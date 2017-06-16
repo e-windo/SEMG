@@ -12,7 +12,7 @@ else
         a = a(1:length(b));
     end
     
-    for i = 1:length(a)
+    for i = 1:round(3*length(a)/10)
         temp = padarray(b,i,0,'pre');
         temp = temp(1:length(a));
         c(i) = dot(a,temp);

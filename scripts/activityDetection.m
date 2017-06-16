@@ -1,14 +1,24 @@
 %demoDetection
 results = cell(1,6);
 %subj = sensor{1000000:1100000,index}';
-subj = analysis{3}';
+%subj = analysis{1}';
 %subj = 10^6*sgolayfilt(abs(hilbert(subj)),3,411);
-%[subj,active,~] = simulateSEMG(1.1,50,0,0,300);
-knownActive = false;
-%subj = subj + mean(subj)*randn(size(subj))*0.1;
-subj = subj-mean(subj);
-sfFixed = 2;
-nRMS = 40;
+%[subjClean,active,centres] = simulateSEMG(1.1,50,0,0,300);
+
+%[corr1,~] = simulateSEMG(0,200,0.00,0.0,200);
+%[corr2,~] = simulateSEMG(0,32,0.00,0.0,2400);
+% subjCorr = 0.22*(corr1(1:length(subjClean))+corr2(1:length(subjClean))+circshift(corr2(1:length(subjClean)),1200));
+% subjNoise = mean(abs(subjClean))*1.6*randn(size(subjClean));
+% subj = subjClean+subjNoise+subjCorr;
+% snr(subjClean,subjCorr)
+% snr(subjClean,subjNoise)
+% snr(subjClean,subjCorr+subjNoise)
+ knownActive = false;
+% %subj = subj + mean(subj)*randn(size(subj))*0.1;
+% subj = subj-mean(subj);
+subj = R';
+sfFixed = 0.5;
+nRMS = 4;
 
 %dsActive = (resample(double(active),2000/nRMS,2000)>0.5);
 subjRMS = resample(subj,2000/nRMS,2000);
@@ -74,8 +84,10 @@ axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('MOVMAX method');
 
 subplot(614)
-golayEssentials = sgolayfilt(abs(hilbert(subj)),7,911);
-res4 = splitClassification(subj,peakActDet(golayEssentials));
+golayEssentials = id(abs(hilbert(subj)),7,211);
+%golayEssentials = golayEssentials./mean(abs(golayEssentials));
+labels4 = peakActDet(golayEssentials);
+res4 = splitClassification(subj,labels4);
 plot(res4(1,:),'b');
 hold on;
 plot(res4(2,:),'r');
@@ -171,7 +183,7 @@ if (knownActive)
 results{1} = classperf(active,(T>thresh));
 results{2} = classperf(dsActive,(R>threshRMS));
 results{3} = classperf(active,(A>thresh3));
-results{4} = classperf(dsActive,(C>score));
-results{5} = classperf(dsActive(1:length(vpathRMS)),(vpathRMS==permsRMS(2))');
+results{4} = classperf(active,labels4);
+results{5} = classperf(active(1:length(crit5)),(crit5==permsRMS(2))');
 results{6} = classperf(active(1:length(vpathTime)),(vpathTime==permsTime(2))');
 end

@@ -1,4 +1,11 @@
-[num,txt,raw] = xlsread('FATIGUE_AMENDED.xlsx',['timings_',num2str(plotID)]);
+function dataSectioned = splitBar(plotID,data,type,subtype)
+
+if strcmp(type, 'fatigue')
+    [num,txt,raw] = xlsread('FATIGUE_AMENDED.xlsx',['timings_',num2str(plotID)]);
+elseif strcmp(type,'technique')
+    [num,txt,raw] = xlsread('TECHNIQUE_AMENDED.xlsx',[num2str(plotID),'_',subtype]);
+end
+
 fh = @(x) all(isnan(x(:)));
 firstcol = raw(:,1);
 firstcol(cellfun(fh,firstcol)) = {'NO'};
