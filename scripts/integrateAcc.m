@@ -1,6 +1,8 @@
 function pos = integrateAcc(x,y,z,fs,maOrder)
+%Given x,y,z accelerations, find resultant trajectory
+
 %assume start = [0,0,0]
-%use simple integration because why not
+%use simple integration 
 
 x = x - maFilter(x,maOrder);
 y = y - maFilter(y,maOrder);

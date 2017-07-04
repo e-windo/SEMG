@@ -1,3 +1,4 @@
+%Experimental script for LMS analysis
 N = 1000;
 nCoefs = 2;
 x = randn(N,1);

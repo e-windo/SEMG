@@ -1,4 +1,7 @@
 function normalisedData = normData(data,mode,varargin)
+%Apply normalisation methods to input data.
+%Mostly unused in practice.
+
 p = inputParser;
 defaultMode = 'r';
 defaultMethod = {'euclidean'};

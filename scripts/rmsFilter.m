@@ -1,4 +1,5 @@
 function out = rmsFilter(input, N)
+%RMS filters data.
 if N==1
     out = input;
 else

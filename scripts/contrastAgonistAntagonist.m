@@ -1,4 +1,5 @@
-%hello dummy
+%Plots pairs of antagonist/agonist muscles for comparison
+
 sensor = getTableData(data{1},'EMG');
 set(0,'defaulttextinterpreter','none');
 rightTricepBicep= [6,4];

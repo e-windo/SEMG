@@ -1,6 +1,13 @@
 %A nice frequency spectrum
 %https://uk.mathworks.com/matlabcentral/answers/36430-plotting-the-frequency-spectrum
 function aNiceFSpectrum(x,Fs,varargin)
+%Plots a nice frequency spectrum.
+%Input: 
+%  x, data signal
+%  Fs, sampling frequency of data
+%  handle, parameter to plot onto 
+%  mode, plot in dB or linear
+
    p = inputParser;
    defaultHandle = gca;
    defaultMode = true;

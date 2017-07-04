@@ -1,4 +1,5 @@
 function tightfit(i,N,mode)
+%Makes the subplot fit tightly to the figure
 offset = N;
 if strcmp(mode,'v')
     pos = [0,1-(i)/offset,1,1/(offset+1)];

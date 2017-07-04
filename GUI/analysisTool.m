@@ -22,7 +22,7 @@ function varargout = analysisTool(varargin)
 
 % Edit the above text to modify the response to help analysisTool
 
-% Last Modified by GUIDE v2.5 20-Jun-2017 17:37:57
+% Last Modified by GUIDE v2.5 30-Jun-2017 16:22:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -156,11 +156,13 @@ catch
 end
 if valid
     try
+        disp(['Importing runID ', num2str(handles.runID),', plotID ',num2str(handles.plotID)]);
         [d,~,o] = getMVCScaledData(handles.runID);
         data = d{handles.plotID};
         origData = o{handles.plotID};
         handles.data = getTableData(data,'EMG');
         handles.origData = getTableData(origData,'EMG');
+        handles.currData = handles.data;
         handles.t = data{:,1};
         disp('Data loaded');
     catch
@@ -192,6 +194,8 @@ handles.checkbox13.Value = 0;
 handles.checkBoxStates = zeros(1,13);
 handles.lockX = 0;
 handles.lockY = 0;
+handles.lowerLim = NaN;
+handles.upperLim = NaN;
 
 guidata(hObject,handles);
 
@@ -514,6 +518,7 @@ for j = 1:length(handles.currData{i})
         subplot(N,1,k);
         setAxis(handles.lowerLim,handles.upperLim);
     end
+    xlabel('Samples / N');
 end
 end
 
@@ -540,6 +545,7 @@ for j = 1:length(handles.currData{i})
         subplot(N,1,k);
         setAxis(handles.lowerLim,handles.upperLim);
     end
+    xlabel('Samples / N');
 end
 end
 
@@ -585,6 +591,7 @@ for j = 1:length(handles.currData{i})
     plot(1:length(coco),coco);
     hold on;
     setAxis(handles.lowerLim,handles.upperLim);
+    xlabel('Samples / N');
 end
 end
 
@@ -657,6 +664,7 @@ for j = 1:length(handles.currData{i})
         subplot(N,1,k);
         setAxis(handles.lowerLim,handles.upperLim);
     end
+    xlabel('Samples / N');
 end
 end
 % --- Executes on button press in pushbutton7.
@@ -686,6 +694,7 @@ for i = 1:length(handles.currData)
         subplot(N,1,k);
         setAxis(handles.lowerLim,handles.upperLim);
     end
+    xlabel('Samples / N');
 end
 
 % --- Executes on button press in pushbutton8.
@@ -694,6 +703,7 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 disp('Beginning partition...');
+warning('off','MATLAB:xlsread:ActiveX');
 handles.currData = handles.data;
 handles.currOrig = handles.origData;
 studyType = handles.popupmenu1.Value;
@@ -709,14 +719,21 @@ end
 handles.nRepeats = nRepeats;
 section = handles.edit3.String;
 
+disp(['Section: ',section,', number of repeats = ',num2str(nRepeats)]);
 if studyType == 1
     [~,~,raw] = xlsread('FATIGUE_AMENDED.xlsx',['timings_',num2str(handles.runID)]);
-else
+elseif studyType == 2
     technique = 'TECHNIQUE_AMENDED.xlsx';
     [~,sheets] = xlsfinfo(technique);
     m = regexp(sheets,[num2str(handles.runID),'_'],'match');
     sheets = sheets(~cellfun(@isempty,m));
     [~,~,raw] = xlsread(technique,sheets{handles.plotID});
+elseif studyType == 3
+    performance = 'performance_AMENDED.xlsx';
+    [~,sheets] = xlsfinfo(performance);
+    m = regexp(sheets,[num2str(handles.runID),'_'],'match');
+    sheets = sheets(~cellfun(@isempty,m));
+    [~,~,raw] = xlsread(performance,sheets{handles.plotID});
 end
 
 fh = @(x) all(isnan(x(:)));
@@ -760,6 +777,7 @@ end
 
 handles.currData = currData;
 guidata(hObject,handles);
+warning('on','MATLAB:xlsread:ActiveX');
 disp('Data partitioned');
 
 % --- Executes on button press in pushbutton9.
@@ -793,3 +811,12 @@ function listbox1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton10.
+function pushbutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+assignin('base','partitionedData',handles.currData);
+disp('Data exported');

@@ -1,4 +1,5 @@
 function reducedData = getTableData(sourceTable,expr,varargin)
+%baby version of getSpecifiedTable
 defaultModeInclude = false;
 defaultModeRowVar = false;
 p = inputParser;

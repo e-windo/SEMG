@@ -1,6 +1,5 @@
-%This function is applied to a DataBlock in order to extract a set
-%of features. These features are stored in a struct, and are returned. This
-%is then processed, typically using the applyToData function.
+%This function is applied to a table in order to extract a set
+%of features. These features are stored in a struct, and are returned.
 
 function features = getFeaturesFromData(M)
     nWaveletSubbands = 6;

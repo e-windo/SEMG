@@ -1,3 +1,6 @@
+%Plots ALL the data from a specified plot&store. Used in signal quality
+%diagnostics
+
 name = 'Run_number_12_MVC_(EMG_RMS)_Left_biceps_brachii_Rep_1.8.hpf.csv';
 
 if (~exist('plot_clean','var')) plot_clean = false; end

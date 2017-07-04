@@ -1,62 +1,59 @@
-%hello dummy
-sensor = getTableData(data{1},'EMG');
-set(0,'defaulttextinterpreter','none');
-rightTricepBicep= [6,4];
-rightDigitorumFlexorSuperficialis = [8,12];
-figureDigitorumFlexorUlnaris = [8,10];
-leftTricepBicep= [7,5];
-leftDigitorumFlexorSuperficialis = [9,13];
-leftDigitorumFlexorUlnaris = [9,11];
-nRMS = 50;
-figure
-tidy = @(x)(strrep(x,'_','\_'));
-subplot(211)
-a = [];
-a.name = getName(rightTricepBicep);
-a.i = eval([a.name,'(1)']);
-a.j = eval([a.name,'(2)']);
-hold on;
-plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.i},nRMS),'DisplayName',tidy(sensor.Properties.VariableNames{a.i}))
-plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.j},nRMS),'r','DisplayName',tidy(sensor.Properties.VariableNames{a.j}))
-title(a.name);
+%Experimental peak detection
 
-subplot(212)
-a.name = getName(leftTricepBicep);
-a.i = eval([a.name,'(1)']);
-a.j = eval([a.name,'(2)']);
-hold on;
-plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.i},nRMS),'DisplayName',tidy(sensor.Properties.VariableNames{a.i}))
-plot(rmsFilter(data{1}{:,1},nRMS),rmsFilter(sensor{:,a.j},nRMS),'r','DisplayName',tidy(sensor.Properties.VariableNames{a.j}))
-title(a.name);
+figure;
+set(0,'defaultfigurecolor',[1 1 1])
+set(gcf,'Color',[1,1,1])
+for i = 1:3
+    subplot(3,1,i);
+    hold on;
+    subj = analysis{i}';
+    subj = subj-mean(subj);
+    %{
+    options = struct();
+K = 2;
+options.K = K;
+options.covtype = 'full'; % model just variance of the noise
+order = 4;
+options.order = order; % MAR order
+options.zeromean = 1; % model the mean
+options.tol = 1e-8;
+options.cyc = 25;
+options.inittype = 'hmmmar';
+options.initcyc = 5;
+options.initrep = 3;
+options.verbose = 0;
+%options.onpower = 1; %Run on POWER. doesn't work though
+%options.pca = 0.99;
 
-for k = 1:2
-    subplot(2,1,k)
-    %axis([50,53,0,130]);
-    legend('-DynamicLegend');
+TSubj = length(subj);
+[hmmTime, ~, ~, vpathTime, ~, ~, ~] = hmmmar(subj'./mean(subj),TSubj,options);
+colours = ['b','r'];
+powers = zeros(1,K);
+predictedStates = cell(1,K);
+for j = 1:K
+    predictedStates{j} = subj(order+1:end).*(vpathTime==j)';
+    powers(j) = std(predictedStates{j});
+    predictedStates{j}(predictedStates{j}==0)=NaN;
 end
-
-%{
-name = 'Run_number_22_Plot_and_Store_3_Rep_1.20.hpf.csv';
-
-if (~exist('plot_clean','var')) plot_clean = false; end
-if ((~plot_clean)||~exist('data','var'))
-    data = import_csv(name);
-    plot_clean = true;
+[~,permsTime] = sort(powers);
+colours = colours(permsTime);
+for j = 1:K
+    plot(predictedStates{j},colours(j),'DisplayName',['State ', num2str(j)]);
 end
-
-
-%sensor = getTableData(data,'TrignoSensor1[^\d]');
-sensor = getTableData(data,'EMG');
-
-N = 100;
-for i = 1:width(sensor)
-    subplot(width(sensor),1,i);
-
-    tempSensor = zeroAppend(maFilter(sensor{1:end,i},1),nextpow2(height(sensor)));
-    MVC = max(tempSensor);
-    std(tempSensor);
-    plot(tempSensor)
+    %}
+    
+    
+    temp = sgolayfilt(abs(hilbert(subj)),3,111);
+    %temp = zscore(temp);
+    sf = 0.2;
+    minPKDST = 300;
+    [pks,locs] = findpeaks(temp,'MinPeakProminence',sf*max(temp),'MinPeakDistance',minPKDST/nRMS);
+    plot(subj);
+    hold on;
+    stem(locs,pks,'filled');
+    
+    title(['Event detection applied to class ',num2str(5-i),' signal'])
+    xlabel('Samples/N');
+    ylabel('Amplitude/V');
+    axis([0,length(subj),aNiceAxisLimit(subj)]);
 end
-
-
-%}

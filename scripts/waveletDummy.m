@@ -1,3 +1,5 @@
+%Experimental script for wavelet denoising
+
 name = 'Run_number_22_Plot_and_Store_2_Rep_1.19.hpf.csv';
 
 if (~exist('plot_clean','var')) plot_clean = false; end

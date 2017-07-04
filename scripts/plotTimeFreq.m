@@ -1,15 +1,17 @@
 function plotTimeFreq(input,Fs)
-figure;
+%Plots both the time domain and frequency domain plots for a given input on
+%the same graph
+figure('units','normalized','position',[0 0 0.7 0.6])
 
+%{
 subplot(2,2,1);
-
 plot((1:length(input))./Fs,input);
 title('Time domain signal');
 xlabel(['Time / s, fs = ', num2str(Fs),'Hz']);
 ylabel('Amplitude / V');
 axis([1/Fs,length(input)/Fs,-sign(min(input))*1.1*min(input),1.1*max(input)]);
-
-subplot(2,2,2);
+%}
+subplot(2,2,[1,2]);
 plot((1:length(input))./Fs,input);
 title('Time domain signal');
 xlabel(['Time / s, fs = ', num2str(Fs),'Hz']);

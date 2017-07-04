@@ -1,3 +1,5 @@
+%Derives fatigue measures for the fatigue dataset
+
 clearvars;
 for plotID = 32:34
     

@@ -1,4 +1,14 @@
 function filtered = getSpecifiedTable(table,varargin)
+%Performs regex selection on the rows/columns of a table to extract the
+%specified subtable.
+%Inputs:
+% table, the table in question
+%Parameters:
+% modeRows: include/exclude rows based on keyword match
+% modeCols: include/exclude columns based on keyword match
+% keywordRows: regex pattern for rows
+% keywordCols: regex pattern for columns
+
 p = inputParser;
 permittedModes = {'exclude','include'};
 defaultMode = 'exclude';

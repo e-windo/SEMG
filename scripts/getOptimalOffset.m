@@ -1,5 +1,12 @@
 function opt = getOptimalOffset(a,b)
-%gets the optimal offset of b wrt a
+%Finds the optimal offset of b wrt a, such that the euclidean distance is
+%maximised. Zeros are placed into the shifted segments.
+%Input:
+% a, first signal
+% b, second signal
+%Output:
+% opt, optimal offset in samples
+
 if (isempty(a) || isempty(b))
     opt = 0;
 else

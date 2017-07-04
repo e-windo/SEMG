@@ -1,4 +1,10 @@
 function results = getWaveletFeatureVector(data,fs)
+%Extracts features from data
+%Inputs:
+% data, cell array of tables
+% fs, sampling frequency
+%Output:
+% results, cell array of tables of features
 assert(iscell(data),'Data must be a cell array');
 features = [];
 

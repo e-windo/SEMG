@@ -1,4 +1,5 @@
 function table = tableifyStruct(extractedData)
+%Turns a conglomerated struct into a table
 
 %Get the fields of the returned data. (patient_one, patient_two...)
 fields2 = fields(extractedData);

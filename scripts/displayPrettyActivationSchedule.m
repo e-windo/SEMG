@@ -1,8 +1,13 @@
 function displayPrettyActivationSchedule(t,data,ids,ulim,hlim)
+%Plot muscle activations for a given set of muscles
+%Input:
+%  t, time points
+%  data, input data as a cell array of muscles
+%  ids, indices of muscles to be examined
+%  ulim, lower x limit of study
+%  hlim, upper x limit of study
 set(0,'DefaultTextInterpreter','none');
 nDisplay = length(ids);
-%ulim = 0.45*10^6;
-%hlim = 3*10^6; %0.5*10^6;
 ax = cell(1,nDisplay);
 for i = 1:nDisplay
    ax{i} = subplot(nDisplay,1,i);
@@ -12,7 +17,6 @@ for i = 1:nDisplay
    hold on;
    plot(t(ulim:hlim),labels.*currData,'b');
    title(data.Properties.VariableNames{ids(i)});
-   ylabel('Contraction? True/False');
 end
 xlabel('Time /s');
 cat = [];

@@ -1,62 +1,76 @@
-%demoDetection
+%This script runs and tests the activity detection methods on either real
+%or simulated data.
+
 results = cell(1,6);
+
+%%Select the data to process
 %subj = sensor{1000000:1100000,index}';
 %subj = analysis{1}';
 %subj = 10^6*sgolayfilt(abs(hilbert(subj)),3,411);
-%[subjClean,active,centres] = simulateSEMG(1.1,50,0,0,300);
 
-%[corr1,~] = simulateSEMG(0,200,0.00,0.0,200);
-%[corr2,~] = simulateSEMG(0,32,0.00,0.0,2400);
-% subjCorr = 0.22*(corr1(1:length(subjClean))+corr2(1:length(subjClean))+circshift(corr2(1:length(subjClean)),1200));
-% subjNoise = mean(abs(subjClean))*1.6*randn(size(subjClean));
-% subj = subjClean+subjNoise+subjCorr;
-% snr(subjClean,subjCorr)
-% snr(subjClean,subjNoise)
-% snr(subjClean,subjCorr+subjNoise)
+%%Create simulated data if necessary
+%{
+[subjClean,active,centres] = simulateSEMG(1.1,50,0,0,300);
+[corr1,~] = simulateSEMG(0,200,0.00,0.0,200);
+[corr2,~] = simulateSEMG(0,32,0.00,0.0,2400);
+subjCorr = 0.22*(corr1(1:length(subjClean))+corr2(1:length(subjClean))+circshift(corr2(1:length(subjClean)),1200));
+subjNoise = mean(abs(subjClean))*1.6*randn(size(subjClean));
+subj = subjClean+subjNoise+subjCorr;
+snr(subjClean,subjCorr)
+snr(subjClean,subjNoise)
+snr(subjClean,subjCorr+subjNoise)
+%}
+
+%%Do we know the true classification labels?
  knownActive = false;
-% %subj = subj + mean(subj)*randn(size(subj))*0.1;
-% subj = subj-mean(subj);
-subj = R';
-sfFixed = 0.5;
+ 
+%%Set fixed threshold for detection, RMS window size
+sfFixed = 2;
 nRMS = 4;
 
-%dsActive = (resample(double(active),2000/nRMS,2000)>0.5);
+if knownActive %Resample the labels so that RMS domain labels can be allocated
+    dsActive = (resample(double(active),2000/nRMS,2000)>0.5);
+end
+%Resample the data so that RMS domain labels can be allocated
 subjRMS = resample(subj,2000/nRMS,2000);
-index = 1;
-nRolling = 400;
+
 figure;
+%Threshold for movmax method
 thresh3 = 0.1;
 
+%For the TEO method, generate labels and plot the active regions
 subplot(411)
 T = getTEO(subj,3);
-%T = T./maxFilter(T,nRolling);
 plot(T,'b');
 hold on;
 thresh = 2*abs(mean(T(1:100)));
 plot(T.*(T>thresh),'r')
 
+%For the fixed threshold RMS method, generate labels and plot the active regions
 subplot(412)
 R = rmsFilter(subj,nRMS);
-%R = R./maxFilter(R,nRolling/nRMS);
 plot(R,'b');
 hold on;
 threshRMS =sfFixed*abs(mean(R(1:floor(100/nRMS))));
 plot(R.*(R>threshRMS),'r')
 
+%For the movmax method, generate labels and plot the active regions
 subplot(413)
 A = getMovMax(subj);
 plot(A,'b');
 hold on;
 plot(A.*(A>thresh3),'r')
 
+%For the fixed threshold time domain method, generate labels and plot the active regions
 subplot(414)
-score = sfFixed*abs(mean(subj(1:100)));%(rmsFilter(sensor{1:10000,index},nRMS));
+score = sfFixed*abs(mean(subj(1:100)));
 plot(subj,'b');
 hold on;
 plot(subj.*(abs(subj)>score),'r')
 refline(0,score);
 
 figure;
+%For the TEO method, generate labels and plot the labelled regions
 subplot(611)
 res1 = splitClassification(subj,T<thresh);
 plot(res1(1,:),'b');
@@ -65,6 +79,7 @@ plot(res1(2,:),'r');
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('TEO method');
 
+%For the fixed threshold RMS method, generate labels and plot the labelled regions
 subplot(612)
 crit2 = resample(double(R<threshRMS),2000,2000/nRMS);
 crit2 = crit2 > 0.5;
@@ -75,6 +90,7 @@ plot(res2(2,:),'r');
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('Fixed threshold, RMS filter used');
 
+%For the MOVMAX method, generate labels and plot the labelled regions
 subplot(613)
 res3 = splitClassification(subj,A<thresh3);
 plot(res3(1,:),'b');
@@ -83,9 +99,9 @@ plot(res3(2,:),'r');
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('MOVMAX method');
 
+%For the SGHILBERT method, generate labels and plot the labelled regions
 subplot(614)
 golayEssentials = id(abs(hilbert(subj)),7,211);
-%golayEssentials = golayEssentials./mean(abs(golayEssentials));
 labels4 = peakActDet(golayEssentials);
 res4 = splitClassification(subj,labels4);
 plot(res4(1,:),'b');
@@ -94,16 +110,7 @@ plot(res4(2,:),'r');
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('PeakDetect based method');
 
-%{
-subplot(614)
-res4 = splitClassification(subj,abs(subj)<score);
-plot(res4(1,:),'b');
-hold on;
-plot(res4(2,:),'r');
-axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
-title('Fixed threshold, time domain without RMS filter');
-%}
-
+%For the HMMAR-RMS method, generate labels and plot the labelled regions
 subplot(615)
 hold on;
 options = struct();
@@ -119,8 +126,6 @@ options.inittype = 'hmmmar';
 options.initcyc = 5;
 options.initrep = 3;
 options.verbose = 0;
-%options.onpower = 1; %Run on POWER. doesn't work though
-%options.pca = 0.99;
 rmsSubj = rmsFilter(subj./mean(subj),nRMS);
 TSubj = length(rmsSubj);
 [hmmRMS, ~, ~, vpathRMS, ~, ~, ~] = hmmmar(rmsSubj',TSubj,options);
@@ -143,6 +148,7 @@ end
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 title('HMMAR, RMS filter used on input');
 
+%For the HMMAR-T method, generate labels and plot the labelled regions
 subplot(616)
 hold on;
 options = struct();
@@ -158,8 +164,6 @@ options.inittype = 'hmmmar';
 options.initcyc = 5;
 options.initrep = 3;
 options.verbose = 0;
-%options.onpower = 1; %Run on POWER. doesn't work though
-%options.pca = 0.99;
 
 TSubj = length(subj);
 [hmmTime, ~, ~, vpathTime, ~, ~, ~] = hmmmar(subj'./mean(subj),TSubj,options);
@@ -179,6 +183,8 @@ end
 title('HMMAR, no RMS filter');
 axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
 
+%If we know the true labels, compute classification performance for each
+%method
 if (knownActive)
 results{1} = classperf(active,(T>thresh));
 results{2} = classperf(dsActive,(R>threshRMS));

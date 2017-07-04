@@ -1,4 +1,6 @@
 function plotHHTnotbad(x,fs)
+%Plots the HHT of a given input x
+
 Ts = 1/fs;
 [b,g] = sgolay(3,41);
 

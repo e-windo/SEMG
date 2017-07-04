@@ -1,4 +1,5 @@
 function c = catCell(a,b,varargin)
+%Concatenates two cell arrays together. Allows for empty arrays
 expectedOptions = {'v','h'};
 defaultOption = 'v';
 p = inputParser;

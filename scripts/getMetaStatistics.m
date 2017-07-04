@@ -1,4 +1,9 @@
 function [statistics] = getMetaStatistics()
+%Returns statistics and values from the data quality scores table
+%Output: 
+% statistics, struct with total data, data split by study, and summary
+% statistics for the data
+
 [~,~,raw] = xlsread('Data Quality Scores.xlsx','table');
 ux = 33;
 lx = 2;

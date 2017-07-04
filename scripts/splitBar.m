@@ -1,11 +1,20 @@
 function dataSectioned = splitBar(plotID,data,type,subtype)
+%Splits data into sections based on labels in an external spreadsheet
+%Inputs:
+% plotID, index of the data run to consider
+% data, the data to be sectioned
+% type, type of study - fatigue, technique, or performance
+% subtype, type of technique - such detache/shift/unstressed/stressed
+%Output:
+% dataSectioned, cell array of segmented data
 
 if strcmp(type, 'fatigue')
     [num,txt,raw] = xlsread('FATIGUE_AMENDED.xlsx',['timings_',num2str(plotID)]);
 elseif strcmp(type,'technique')
     [num,txt,raw] = xlsread('TECHNIQUE_AMENDED.xlsx',[num2str(plotID),'_',subtype]);
+elseif strcmp(type,'performance')
+    [num,txt,raw] = xlsread('PERFORMANCE_AMENDED.xlsx',[num2str(plotID),'_',subtype]);
 end
-
 fh = @(x) all(isnan(x(:)));
 firstcol = raw(:,1);
 firstcol(cellfun(fh,firstcol)) = {'NO'};

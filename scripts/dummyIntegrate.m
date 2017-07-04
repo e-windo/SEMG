@@ -1,4 +1,5 @@
-%dummyIntegrate
+%Experimental accelerometer integration
+
 mn = 1;
 mx = 30000;
 nMusc = floor((width(data)-1)/4);

@@ -1,4 +1,7 @@
 function out = MVCTester(data)
+%Plots the values of the computed MVC for different window sizes and
+%orderings
+
 nIterRMS = 5000;
 nIterMean = 1;
 nIterMedian = 1;

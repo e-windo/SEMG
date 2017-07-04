@@ -1,4 +1,4 @@
-%clearvars;
+%Derives fatigue measures for the technique dataset
 subtypes = {{'detache','shiftfast','','','shiftslow'},{'detache','shiftfast','shiftslow',''},{'detacheslow','shiftslow','shiftfast','','detachefast'},{'detache','shiftslow','shiftfast',''}};
 ids = [12,13,15,16];
 

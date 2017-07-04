@@ -1,3 +1,5 @@
+%For every muscle, filter and plot the signal. 
+
 nMusc = width(sensor);
 
 for i = 1:nMusc

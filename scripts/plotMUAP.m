@@ -1,4 +1,5 @@
 %Use 'Run_number_34_Plot_and_Store_Bach_and_Scale_repetitions_Rep_1.15.hpf';
+%Plots a MUAP chain from real data, contrasts with simulated data
 
 subplot(131)
 plot(sensor{769590:769960,8})

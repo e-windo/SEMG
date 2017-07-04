@@ -1,4 +1,4 @@
-%dummy2
+%Plots fatigue features for non-segmented data
 close all;
 for j = 1:14
     

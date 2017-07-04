@@ -1,4 +1,4 @@
-
+%Segment data table by section, plot feature for each muscle and section
 muscles = {'LeftBicepsBrachii','LeftExtensorDigitorum','LeftFlexorCarpiUlnaris','LeftFlexorDigitorumSuperficial','LeftTricepsBrachii','RightAnteriorDeltoid','RightBicepsBrachii','RightExtensorDigitorum','RightFlexorCarpiUlnaris','RightFlexorDigitorumSuperficialis','RightMiddleDeltoid','RightPectoralisMajorClavicularHead','RightTricepsBrachii'};
 keywC = 'ratioFeatures_one';
 

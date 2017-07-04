@@ -1,4 +1,5 @@
 function [conglom,upName] = unpackCellArrayAndDoAThingOnIt(Arr, thing, names)
+%Don't use this explicitly.
 if istable(Arr)
     conglom = thing(Arr);
     try

@@ -1,4 +1,9 @@
 function teo = getTEO(x,a)
+%Applies the Teager-Kaiser energy operator to a signal
+%Inputs:
+% x, the data
+% a, the offset to consider
+
 teo = x;
 m = 0.5;
 for n = 1+a:length(x)-a

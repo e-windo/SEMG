@@ -1,3 +1,5 @@
+%Script for visual assessment of fatigue feature trends
+
 wId = 'MATLAB:handle_graphics:exceptions:SceneNode';
 warning('off',wId);
 Q = cell(1,4);

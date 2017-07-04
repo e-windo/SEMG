@@ -1,4 +1,4 @@
-%movingVarianceCalibration
+%Experimental script to calibrate movingVariance
 
 %Peak at 0.7/fsamp*fs
 for j = 1:10

@@ -1,3 +1,5 @@
+%Generates and plots fatigue measures for the technique study, partitioned by
+%section.
 
 shift = false;
 fea = 3;

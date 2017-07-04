@@ -1,4 +1,6 @@
 function [spectrum,split] = getWaveletPower(C,L)
+%Finds the power in each wavelet subband, given wavelet decomposition and the
+%number of coefficients per level
 if iscolumn(C)
     C = C';
     L = L';

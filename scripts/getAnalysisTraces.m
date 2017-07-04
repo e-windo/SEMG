@@ -1,3 +1,5 @@
+%Extract analysis signals from the dataset
+
 start1 = 1160000;
 start2 = 665400;
 offset = 10000;

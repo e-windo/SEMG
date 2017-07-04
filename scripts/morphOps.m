@@ -1,4 +1,13 @@
 function output = morphOps(input,varargin)
+%Performs erode/dilate operations to a 1D input
+%Inputs:
+% input, the data
+%Parameters:
+% erodeSpan, the size of the erosion element
+% dilateSpan, the size of the dilation element
+%Output:
+% output, the data after erosion and dilation
+
 defaultErode = 15;
 defaultDilate = 15;
 FLIP = false;

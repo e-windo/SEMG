@@ -1,4 +1,5 @@
 function out = demoWignerVille(input,fs)
+%Plot Wigner-Ville distribution for a given input and sampling rate
 [tfr, t, f] = wv(resample(input'./max(input'),1000,2000));
 t = (1:length(t)).*(2/fs);
 f = (0:length(f)-1).*(800/fs);

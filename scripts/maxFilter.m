@@ -1,4 +1,6 @@
 function y = maxFilter(x,N)
+%Max filter of order N
+
 if iscolumn(x)
    x = x';
    col = true;

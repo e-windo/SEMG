@@ -1,6 +1,7 @@
-%hello dummy
+%Plots several muscles
+
 d = 5;
-sensor = getTableData(data{d},'EMG');
+%sensor = getTableData(data{d},'EMG');
 set(0,'defaulttextinterpreter','none');
 rightTricepBicep= [6,4];
 rightDigitorumFlexorSuperficialis = [8,12];
@@ -23,7 +24,7 @@ for i = 1:3
     a.data{i} = rmsFilter(sensor{:,a.i(i)},nRMS);
     combined = combined + a.data{i}.^2;
 end
-X = resample(data{d}{:,1},100/nRMS,450);
+X = resample(data{:,1},100/nRMS,450);
 for i = 1:3
     ax{i} = subplot(4,1,i); 
     Y = maxFilter(resample(a.data{i},100,450)',1);
@@ -31,7 +32,7 @@ for i = 1:3
     title(tidy(sensor.Properties.VariableNames{a.i(i)}));
 end
 ax{4} = subplot(4,1,4);
-plot(rmsFilter(data{d}{:,1},nRMS),sqrt(combined./3),'r','DisplayName',tidy(sensor.Properties.VariableNames{a.i(i)}))
+plot(rmsFilter(data{:,1},nRMS),sqrt(combined./3),'r','DisplayName',tidy(sensor.Properties.VariableNames{a.i(i)}))
 
 linkaxes([ax{1},ax{2},ax{3},ax{4}],'xy');
 yrange = 0;
@@ -41,7 +42,7 @@ end
 
 for k = 1:3
     subplot(4,1,k)
-    axis([0,data{d}{end,1},ternary(nRMS==1,-yrange,0),yrange^1]);
+    axis([0,data{end,1},ternary(nRMS==1,-yrange,0),yrange^1]);
     legend('-DynamicLegend');
 end
 

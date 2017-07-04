@@ -1,5 +1,5 @@
 function discreteHistogram(input)
-
+%Plots a nice histogram for discrete data
 if isrow(input)
     input = input';
 end

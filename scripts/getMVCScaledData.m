@@ -1,4 +1,11 @@
-function [data,fs] = getMVCScaledData(runNumber,varargin)
+function [data,fs,origData] = getMVCScaledData(runNumber)
+%Scales input data by the MVC value
+%Input: 
+% runNumber, the id of the run
+%Output:
+% data, the scaled data
+% fs, the sampling frequency of the data
+% origData, the unscaled data
 runTypes = {'Left_biceps_brachii','Left_extensor_digitorum','Left_flexor_carpi_ulnaris','Left_flexor_digitorum_superficial','Left_triceps_brachii','Right_anterior_deltoid','Right_biceps_brachii','Right_extensor_digitorum','Right_flexor_carpi_ulnaris','Right_flexor_digitorum_superficialis','Right_middle_deltoid','Right_pectoralis_major_clavicular_head','Right_triceps_brachii','Plot_and_Store'};
 id = 'MATLAB:table:ModifiedVarnames';
 warning('off',id);
@@ -7,6 +14,7 @@ expr = ['Run_number_',num2str(runNumber),'_'];
 reducedNames = {};
 
 nRMS = 1;
+nRMSMVC = 256;
 
 for i = 1:length(fileNames)
     temp = regexp(fileNames{i},expr);
@@ -33,30 +41,35 @@ for i = 1:length(runTypes)-1
    for j = 1:length(sorted{i})
         plotAndStore = import_csv(sorted{i}{j});
         fs = 1/(plotAndStore{2,1}-plotAndStore{1,1});
-        tempMVC = tempMVC+max(maFilter(rmsFilter(plotAndStore{:,2},nRMS),1000));
+        tempMVC = tempMVC+max(maFilter(rmsFilter(plotAndStore{:,2},nRMSMVC),1000));
    end
    MVC(i) = tempMVC/length(sorted{i});
 end
 
 %Scale actual data by the MVC
 data = cell(1,length(sorted{end}));
+origData = cell(1,length(sorted{end}));
 for i = 1:length(sorted{end})
     plotAndStore = import_csv(sorted{end}{i});
     RMSFiltered = zeros(size(plotAndStore,1)/nRMS,size(plotAndStore,2));
+    scaledData = zeros(size(plotAndStore,1)/nRMS,size(plotAndStore,2));
     for j = 1:size(plotAndStore,2)
-        RMSFiltered(:,j) = rmsFilter(plotAndStore{:,j},nRMS);
+        RMSFiltered(:,j) = plotAndStore{:,j};
+        scaledData(:,j) = plotAndStore{:,j};
     end
     for j = 1:length(sorted)-1
        matchesMuscle = ~cellfun(@isempty,regexp(plotAndStore.Properties.VariableNames,changeFormatFilenameToTable(runTypes{j})));
        matchesEMG    = ~cellfun(@isempty,regexp(plotAndStore.Properties.VariableNames,'EMG'));
        matchesBoth   = matchesEMG&matchesMuscle;
        try
-       RMSFiltered(:,matchesBoth) = 100 .* RMSFiltered(:,matchesBoth) ./ MVC(j);
+       scaledData(:,matchesBoth) = 100 .* scaledData(:,matchesBoth) ./ MVC(j);
        catch
           disp('umessedup'); 
        end
      end
-    data{i} =  array2table(RMSFiltered,'VariableNames',plotAndStore.Properties.VariableNames);
+    data{i} =  array2table(scaledData,'VariableNames',plotAndStore.Properties.VariableNames);
+    origData{i} =  array2table(RMSFiltered,'VariableNames',plotAndStore.Properties.VariableNames);
+
 end
 warning('on',id);
 end

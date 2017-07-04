@@ -1,5 +1,5 @@
 function Y = sgolayImpl(order,data,step)
-
+%Savitsky Golay implementation for personal interest
 N = length(data);
 FLIP = iscolumn(data);
 if (FLIP)

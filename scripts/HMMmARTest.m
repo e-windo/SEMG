@@ -1,3 +1,5 @@
+%Experimental HMMmAR analysis
+
 addpath(genpath('.'))
 DS = [];
 ids = 1:5;

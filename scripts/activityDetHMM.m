@@ -1,10 +1,24 @@
 function [labels,hmm,pos] = activityDetHMM(input,order,hmm,pos)
+%Computes HMMAR estimates for the state labels of a sequence
+%Input:
+% input, data sequence in question
+% order, order of HMMAR model
+% hmm, previously trained HMMAR model
+% pos, previously generated index corresponding to 'active' state
+%Output:
+% labels, boolean state labels (2 state HMM)
+% hmm, trained HMMAR model
+% pos, index corresponding to 'active' state
+
 
 TSubj = length(input);
+%If we don't have a previously trained HMM, train one on the data
 if isempty(hmm)
+    %If no model order specified, use a default
 if isempty(order)
     order = 4;
 end
+%Initialise HMM training parameters
 options = struct();
 K = 2;
 options.K = K;
@@ -17,32 +31,21 @@ options.inittype = 'hmmmar';
 options.initcyc = 5;
 options.initrep = 3;
 options.verbose = 0;
-%options.onpower = 1; %Run on POWER. doesn't work though
-%options.pca = 0.99;
 subj = input';
+%Train model
 [hmm, ~, ~, vpathTime, ~, ~, ~] = hmmmar(subj'./mean(subj),TSubj,options);
-colours = ['b','r'];
 powers = zeros(1,K);
 predictedStates = cell(1,K);
-%figure;
-%hold on;
+%Compute state powers
 for j = 1:K
     predictedStates{j} = subj(order+1:end).*(vpathTime==j)';
     powers(j) = std(predictedStates{j})/sum(vpathTime==j);
-    predictedStates{j}(predictedStates{j}==0)=NaN;
 end
-[~,permsTime] = sort(powers);
-colours = colours(permsTime);
-%{
-for j = 1:K
-    plot(predictedStates{j},colours(j),'DisplayName',['State ', num2str(j)]);
-end
-%}
-%title('HMMAR, no RMS filter');
-%axis([1,length(subj),1.1*min(subj),1.1*max(subj)]);
+%Find state with maximum power, use as 'active' state
 [~,pos] = max(powers);
+%Generate binary labels
 labels = vpathTime==pos;
-else
+else %If HMM previously trained, explicitly use the viterbi algorithm to decode labels
     vPath = hmmdecode(input,TSubj,hmm,1);
     labels = vPath==pos;
 end
