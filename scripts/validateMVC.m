@@ -1,4 +1,7 @@
-function dummyfun(id,data)
+function validateMVC(id,data)
+%Shows the points that lie outside the 100% mark for data preprocessed by
+%the MVC
+
 figure
 hold on
 id = 4*(id-1) + 2;
