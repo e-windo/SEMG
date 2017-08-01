@@ -155,20 +155,16 @@ catch
     valid = false;
 end
 if valid
-    try
+  %  try
         disp(['Importing runID ', num2str(handles.runID),', plotID ',num2str(handles.plotID)]);
         [d,~,o] = getMVCScaledData(handles.runID);
         data = d{handles.plotID};
         origData = o{handles.plotID};
         handles.data = getTableData(data,'EMG');
         handles.origData = getTableData(origData,'EMG');
-        handles.currData = handles.data;
+        handles.currData{1}{1} = handles.data;
         handles.t = data{:,1};
         disp('Data loaded');
-    catch
-        disp('Error in data import');
-        valid = false;
-    end
 end
 
 handles.validData = valid;
@@ -537,12 +533,19 @@ for j = 1:length(handles.currData{i})
         ax{k} = subplot(N,1,k);
         hold on;
         temp = sel{:,k};
-        temp = rmsFilter(temp,500);
-        plot(1:length(temp),temp);
+        rmsOrder = 500;
+        temp = rmsFilter(temp,rmsOrder);
+        try
+        temp = temp(2:length(temp)-2);
+        catch
+            disp('Insufficient datapoints to window normally, displaying entire trace');
+        end
+        plot(1:length(temp),temp,'DisplayName',['mean EMG: ',num2str(mean(temp))]);
     end
     lockXY(ax,handles.radiobutton1.Value,handles.radiobutton2.Value);
     for k = 1:N
         subplot(N,1,k);
+        legend('-DynamicLegend');
         setAxis(handles.lowerLim,handles.upperLim);
     end
     xlabel('Samples / N');
@@ -656,7 +659,7 @@ for j = 1:length(handles.currData{i})
     for k = 1:N
         ax{k} = subplot(N,1,k);
         hold on;
-        temp = getMedFreqFramed(sel{:,k},200);
+        temp = getMedFreqFramed(sel{:,k},500);
         plot(1:length(temp),temp);
     end
     lockXY(ax,handles.radiobutton1.Value,handles.radiobutton2.Value);
@@ -704,9 +707,13 @@ function pushbutton8_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 disp('Beginning partition...');
 warning('off','MATLAB:xlsread:ActiveX');
+try
 handles.currData = handles.data;
 handles.currOrig = handles.origData;
 studyType = handles.popupmenu1.Value;
+catch
+    disp('No data available to partition');
+end
 try
 nRepeats = round(str2double(handles.edit4.String)); 
 if isnan(nRepeats)
@@ -716,6 +723,7 @@ catch
     nRepeats = 1;
     disp('Invalid number of repeats');
 end
+try
 handles.nRepeats = nRepeats;
 section = handles.edit3.String;
 
@@ -779,6 +787,10 @@ handles.currData = currData;
 guidata(hObject,handles);
 warning('on','MATLAB:xlsread:ActiveX');
 disp('Data partitioned');
+catch e
+   disp(e);
+   disp('Error partitioning data'); 
+end
 
 % --- Executes on button press in pushbutton9.
 function pushbutton9_Callback(hObject, eventdata, handles)
